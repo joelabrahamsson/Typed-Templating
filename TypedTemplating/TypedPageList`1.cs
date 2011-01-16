@@ -119,14 +119,24 @@ namespace TypedTemplating
 
         ITemplate GetItemTemplateHeader(PageListPageItem<TPageData> pageItem)
         {
-            if (IsAlternatingItem(pageItem.DataItemIndex) && AlternatingItemTemplateHeader != null)
+            if (pageItem.IsFirstPageItem && FirstItemHeaderTemplate != null)
             {
-                return AlternatingItemTemplateHeader;
+                return FirstItemHeaderTemplate;
+            }
+
+            if (pageItem.IsLastPageItem && LastItemHeaderTemplate != null)
+            {
+                return LastItemHeaderTemplate;
+            }
+
+            if (IsAlternatingItem(pageItem.DataItemIndex) && AlternatingItemHeaderTemplate != null)
+            {
+                return AlternatingItemHeaderTemplate;
             }
             
-            if (ItemTemplateHeader != null)
+            if (ItemHeaderTemplate != null)
             {
-                return ItemTemplateHeader;
+                return ItemHeaderTemplate;
             }
 
             return null;
@@ -134,14 +144,24 @@ namespace TypedTemplating
 
         ITemplate GetItemTemplateFooter(PageListPageItem<TPageData> pageItem)
         {
-            if (IsAlternatingItem(pageItem.DataItemIndex) && AlternatingItemTemplateFooter != null)
+            if (pageItem.IsFirstPageItem && FirstItemFooterTemplate != null)
             {
-                return AlternatingItemTemplateFooter;
+                return FirstItemFooterTemplate;    
+            }
+
+            if (pageItem.IsLastPageItem && LastItemFooterTemplate != null)
+            {
+                return LastItemFooterTemplate;
+            }
+
+            if (IsAlternatingItem(pageItem.DataItemIndex) && AlternatingItemFooterTemplate != null)
+            {
+                return AlternatingItemFooterTemplate;
             }
             
-            if (ItemTemplateFooter != null)
+            if (ItemFooterTemplate != null)
             {
-                return ItemTemplateFooter;
+                return ItemFooterTemplate;
             }
 
             return null;
@@ -343,22 +363,42 @@ namespace TypedTemplating
         [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
-        public virtual ITemplate ItemTemplateHeader { get; set; }
+        public virtual ITemplate ItemHeaderTemplate { get; set; }
 
         [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
-        public virtual ITemplate ItemTemplateFooter { get; set; }
+        public virtual ITemplate ItemFooterTemplate { get; set; }
 
         [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
-        public virtual ITemplate AlternatingItemTemplateHeader { get; set; }
+        public virtual ITemplate AlternatingItemHeaderTemplate { get; set; }
 
         [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
-        public virtual ITemplate AlternatingItemTemplateFooter { get; set; }
+        public virtual ITemplate AlternatingItemFooterTemplate { get; set; }
+
+        [TemplateContainer(typeof(PageListItem))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate FirstItemHeaderTemplate { get; set; }
+
+        [TemplateContainer(typeof(PageListItem))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate FirstItemFooterTemplate { get; set; }
+
+        [TemplateContainer(typeof(PageListItem))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate LastItemHeaderTemplate { get; set; }
+
+        [TemplateContainer(typeof(PageListItem))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate LastItemFooterTemplate { get; set; }
         #endregion
 
         #region IPageSource
