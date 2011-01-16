@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using EPiServer.Core;
 
-namespace TypedTemplating.AccessFilter
+namespace TypedTemplating.AccessFiltering
 {
     public interface IAccessFilteringStrategy<TPageData> where TPageData : PageData
     {

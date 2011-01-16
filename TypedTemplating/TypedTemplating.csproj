@@ -44,8 +44,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessFilter\FilterForVisitor`1.cs" />
-    <Compile Include="AccessFilter\IAccessFilteringStrategy`1.cs" />
+    <Compile Include="AccessFiltering\FilterForVisitor`1.cs" />
+    <Compile Include="AccessFiltering\IAccessFilteringStrategy`1.cs" />
     <Compile Include="Listing\Children`1.cs" />
     <Compile Include="Listing\RecursiveChildren`1.cs" />
     <Compile Include="Listing\IListingStrategy`1.cs" />
@@ -61,6 +61,9 @@
     <Compile Include="Paging\PagingSpecification.cs" />
     <Compile Include="Paging\QueryStringPaging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Filtering\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

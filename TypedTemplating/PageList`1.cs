@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.UI;
-using EPiServer;
 using EPiServer.Core;
-using TypedTemplating.AccessFilter;
+using TypedTemplating.AccessFiltering;
 using TypedTemplating.Listing;
 using TypedTemplating.Paging;
 

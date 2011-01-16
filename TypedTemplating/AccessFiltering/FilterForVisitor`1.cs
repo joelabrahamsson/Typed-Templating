@@ -3,7 +3,7 @@ using System.Linq;
 using EPiServer.Core;
 using EPiServer.Filters;
 
-namespace TypedTemplating.AccessFilter
+namespace TypedTemplating.AccessFiltering
 {
     public class FilterForVisitor<TPageData> : IAccessFilteringStrategy<TPageData> where TPageData : PageData
     {
