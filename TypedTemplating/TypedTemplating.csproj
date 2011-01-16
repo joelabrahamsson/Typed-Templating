@@ -55,6 +55,7 @@
     <Compile Include="PageListPageItemEventArgs`1.cs" />
     <Compile Include="PageList`1.cs" />
     <Compile Include="PageListPageItem`1.cs" />
+    <Compile Include="PageSourceHelper.cs" />
     <Compile Include="Paging\IPagingStrategy.cs" />
     <Compile Include="Paging\NoPaging.cs" />
     <Compile Include="Paging\PagingSpecification.cs" />

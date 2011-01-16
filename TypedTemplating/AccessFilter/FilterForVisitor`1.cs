@@ -11,7 +11,7 @@ namespace TypedTemplating.AccessFilter
         {
             var pageCollection = new PageDataCollection(pages);
             FilterForVisitor.Filter(pageCollection);
-            return pageCollection.Cast<TPageData>();
+            return pageCollection.OfType<TPageData>();
         }
     }
 }

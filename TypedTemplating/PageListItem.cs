@@ -1,5 +1,4 @@
 ﻿using System.Web.UI;
-using EPiServer;
 using EPiServer.Core;
 
 namespace TypedTemplating
@@ -12,52 +11,39 @@ namespace TypedTemplating
         }
 
         public int ItemIndex { get; private set; }
-        
+
+        #region IPageSource
         public virtual PageData CurrentPage
         {
             get
             {
-                return pageSource.CurrentPage;
+                return PageSource.CurrentPage;
             }
         }
 
-        public PageDataCollection GetChildren(PageReference pageLink)
+        PageDataCollection IPageSource.GetChildren(PageReference pageLink)
         {
-            return pageSource.GetChildren(pageLink);
+            return PageSource.GetChildren(pageLink);
         }
 
-        public PageData GetPage(PageReference pageLink)
+        PageData IPageSource.GetPage(PageReference pageLink)
         {
             return PageSource.GetPage(pageLink);
         }
 
         private IPageSource pageSource;
-        private IPageSource PageSource
+        protected virtual IPageSource PageSource
         {
             get
             {
                 if (pageSource != null)
                     return pageSource;
 
-                for (Control control = Parent; (control != Page) && (control != null); control = control.Parent)
-                {
-                    pageSource = control as IPageSource;
-                    if (pageSource != null)
-                    {
-                        break;
-                    }
-                }
-                if (pageSource == null)
-                {
-                    pageSource = Page as IPageSource;
-                }
-                if (pageSource == null)
-                {
-                    pageSource = DataFactory.Instance;
-                }
+                pageSource = PageSourceHelper.GetPageSourceForControl(this);
 
                 return pageSource;
             }
         }
+        #endregion
     }
 }

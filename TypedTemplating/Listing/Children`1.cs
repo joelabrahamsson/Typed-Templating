@@ -9,7 +9,9 @@ namespace TypedTemplating.Listing
     {
         public virtual IEnumerable<TPageData> GetPages(PageReference pageLink)
         {
-            return DataFactory.Instance.GetChildren(pageLink).Cast<TPageData>();
+            return DataFactory.Instance.GetChildren(pageLink)
+                .OfType<TPageData>()
+                .ToList();
         }
     }
 }

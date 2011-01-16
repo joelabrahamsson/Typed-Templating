@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.UI;
+using EPiServer;
 using EPiServer.Core;
 using TypedTemplating.AccessFilter;
 using TypedTemplating.Listing;
@@ -12,7 +13,7 @@ namespace TypedTemplating
 {
     [ParseChildren(true)]
     [PersistChildren(true)]
-    public class PageList<TPageData> : Control, INamingContainer where TPageData : PageData
+    public class PageList<TPageData> : Control, INamingContainer, IPageSource where TPageData : PageData
     {
         bool isDataBound;
 
@@ -64,32 +65,7 @@ namespace TypedTemplating
             
             foreach (var page in pages)
             {
-                PageListPageItem<TPageData> container =
-                    new PageListPageItem<TPageData>(
-                        itemIndex,
-                        page,
-                        dataItemIndex,
-                        numberOfPagesToRender,
-                        pageLink);
-
-                var itemTemplateHeader = GetItemTemplateHeader(dataItemIndex);
-                if (itemTemplateHeader != null)
-                {
-                    itemTemplateHeader.InstantiateIn(container);
-                }
-
-                var template = GetItemTemplate(container);
-                template.InstantiateIn(container);
-                Controls.Add(container);
-                container.DataBind();
-
-                var itemTemplateFooter = GetItemTemplateFooter(dataItemIndex);
-                if (itemTemplateFooter != null)
-                {
-                    itemTemplateFooter.InstantiateIn(container);
-                }
-
-                OnPageItemDataBound(container);
+                AddPageItem(itemIndex, page, dataItemIndex, numberOfPagesToRender);
                 itemIndex++;
 
                 if (IsNotLastItem(dataItemIndex, numberOfPagesToRender) && SeparatorTemplate != null)
@@ -101,10 +77,48 @@ namespace TypedTemplating
                 dataItemIndex++;
             }
         }
-        
-        ITemplate GetItemTemplateHeader(int dataItemIndex)
+
+        void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
         {
-            if (IsAlternatingItem(dataItemIndex) && AlternatingItemTemplateHeader != null)
+            PageListPageItem<TPageData> itemContainer =
+                new PageListPageItem<TPageData>(
+                    itemIndex,
+                    page,
+                    dataItemIndex,
+                    numberOfPagesToRender,
+                    listingRoot);
+
+            var itemTemplateHeader = GetItemTemplateHeader(itemContainer);
+            if (itemTemplateHeader != null)
+            {
+                var headerContainer = new Control();
+                itemTemplateHeader.InstantiateIn(headerContainer);
+                itemContainer.ItemHeader = headerContainer;
+            }
+
+            var template = GetItemTemplate(itemContainer);
+            if (template != null)
+            {
+                template.InstantiateIn(itemContainer);
+            }
+
+            var itemTemplateFooter = GetItemTemplateFooter(itemContainer);
+            if (itemTemplateFooter != null)
+            {
+                var footerContainer = new Control();
+                itemTemplateFooter.InstantiateIn(footerContainer);
+                itemContainer.ItemFooter = footerContainer;
+            }
+
+            Controls.Add(itemContainer);
+
+            itemContainer.DataBind();
+            OnPageItemDataBound(itemContainer);
+        }
+
+        ITemplate GetItemTemplateHeader(PageListPageItem<TPageData> pageItem)
+        {
+            if (IsAlternatingItem(pageItem.DataItemIndex) && AlternatingItemTemplateHeader != null)
             {
                 return AlternatingItemTemplateHeader;
             }
@@ -117,9 +131,9 @@ namespace TypedTemplating
             return null;
         }
 
-        ITemplate GetItemTemplateFooter(int dataItemIndex)
+        ITemplate GetItemTemplateFooter(PageListPageItem<TPageData> pageItem)
         {
-            if (IsAlternatingItem(dataItemIndex) && AlternatingItemTemplateFooter != null)
+            if (IsAlternatingItem(pageItem.DataItemIndex) && AlternatingItemTemplateFooter != null)
             {
                 return AlternatingItemTemplateFooter;
             }
@@ -192,8 +206,8 @@ namespace TypedTemplating
         #region Page retrieval and filtering
         protected virtual IEnumerable<TPageData> GetAllPagesFromSource()
         {
-            if (!PageReference.IsNullOrEmpty(pageLink))
-                return ListingStrategy.GetPages(pageLink);
+            if (!PageReference.IsNullOrEmpty(listingRoot))
+                return ListingStrategy.GetPages(listingRoot);
 
             if(dataSource != null)
                 return dataSource;
@@ -280,18 +294,18 @@ namespace TypedTemplating
             set { dataSource = value; }
         }
 
-        PageReference pageLink;
+        PageReference listingRoot;
         public virtual PageReference ListingRoot
         {
             get
             {
-                return PageReference.IsNullOrEmpty(pageLink) 
+                return PageReference.IsNullOrEmpty(listingRoot) 
                     ? PageReference.EmptyReference
-                    : pageLink;
+                    : listingRoot;
             }
             set
             {
-                pageLink = value;
+                listingRoot = value;
             }
         }
         #endregion
@@ -322,25 +336,59 @@ namespace TypedTemplating
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate SeparatorTemplate { get; set; }
 
-        [TemplateContainer(typeof(NonPageItem))]
+        [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate ItemTemplateHeader { get; set; }
 
-        [TemplateContainer(typeof(NonPageItem))]
+        [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate ItemTemplateFooter { get; set; }
 
-        [TemplateContainer(typeof(NonPageItem))]
+        [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate AlternatingItemTemplateHeader { get; set; }
 
-        [TemplateContainer(typeof(NonPageItem))]
+        [TemplateContainer(typeof(PageListItem))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate AlternatingItemTemplateFooter { get; set; }
+        #endregion
+
+        #region IPageSource
+        public virtual PageData CurrentPage
+        {
+            get
+            {
+                return PageSource.CurrentPage;
+            }
+        }
+
+        public PageDataCollection GetChildren(PageReference pageLink)
+        {
+            return PageSource.GetChildren(pageLink);
+        }
+
+        public PageData GetPage(PageReference pageLink)
+        {
+            return PageSource.GetPage(pageLink);
+        }
+
+        private IPageSource pageSource;
+        protected virtual IPageSource PageSource
+        {
+            get
+            {
+                if (pageSource != null)
+                    return pageSource;
+
+                pageSource = PageSourceHelper.GetPageSourceForControl(this);
+
+                return pageSource;
+            }
+        }
         #endregion
     }
 }
