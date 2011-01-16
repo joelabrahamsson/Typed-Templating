@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.UI;
 using EPiServer.Core;
 using TypedTemplating.AccessFiltering;
+using TypedTemplating.Filtering;
 using TypedTemplating.Listing;
 using TypedTemplating.Paging;
 
@@ -19,7 +20,8 @@ namespace TypedTemplating
         public PageList()
         {
             ListingStrategy = new Children<TPageData>();
-            AccessFilteringStratey = new FilterForVisitor<TPageData>();
+            AccessFilteringStrategy = new FilterForVisitor<TPageData>();
+            FilteringStrategy = new NoFiltering<TPageData>();
             PagingStrategy = new NoPaging();
         }
 
@@ -216,13 +218,14 @@ namespace TypedTemplating
 
         protected virtual IEnumerable<TPageData> GetPagesToList()
         {
-            return AccessFilteringStratey.Filter(GetAllPagesFromSource());
+            var accessiblePages = AccessFilteringStrategy.Filter(GetAllPagesFromSource());
+            return FilteringStrategy.Filter(accessiblePages);
         }
 
         protected virtual IEnumerable<TPageData> GetPagesToRender()
         {
             int skipCount = (PagingPage - 1)*PagingPageSize;
-
+            
             return GetPagesToList()
                 .Skip(skipCount)
                 .Take(PagingPageSize);
@@ -278,7 +281,9 @@ namespace TypedTemplating
         #endregion
 
         #region Configurables
-        public IAccessFilteringStrategy<TPageData> AccessFilteringStratey { get; set; }
+        public IAccessFilteringStrategy<TPageData> AccessFilteringStrategy { get; set; }
+
+        public IFilteringStrategy<TPageData> FilteringStrategy { get; set; }
 
         public IListingStrategy<TPageData> ListingStrategy { get; set; }
 

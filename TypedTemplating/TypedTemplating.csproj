@@ -46,6 +46,10 @@
   <ItemGroup>
     <Compile Include="AccessFiltering\FilterForVisitor`1.cs" />
     <Compile Include="AccessFiltering\IAccessFilteringStrategy`1.cs" />
+    <Compile Include="Filtering\BranchBelowRootVisibleInMenus`1.cs" />
+    <Compile Include="Filtering\IFilteringStrategy`1.cs" />
+    <Compile Include="Filtering\NoFiltering`1.cs" />
+    <Compile Include="Filtering\VisibleInMenus`1.cs" />
     <Compile Include="Listing\Children`1.cs" />
     <Compile Include="Listing\RecursiveChildren`1.cs" />
     <Compile Include="Listing\IListingStrategy`1.cs" />
@@ -62,9 +66,7 @@
     <Compile Include="Paging\QueryStringPaging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Filtering\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
