@@ -50,7 +50,6 @@
     <Compile Include="Listing\RecursiveChildren`1.cs" />
     <Compile Include="Listing\IListingStrategy`1.cs" />
     <Compile Include="NonPageItem.cs" />
-    <Compile Include="PageItemRenderingContext`1.cs" />
     <Compile Include="PageListItem.cs" />
     <Compile Include="PageListItemEventArgs.cs" />
     <Compile Include="PageListPageItemEventArgs`1.cs" />

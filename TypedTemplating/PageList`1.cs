@@ -64,26 +64,33 @@ namespace TypedTemplating
             
             foreach (var page in pages)
             {
-                var pageItemContext = 
-                    new PageItemRenderingContext<TPageData>(
-                        page, dataItemIndex, numberOfPagesToRender);
-                
+                PageListPageItem<TPageData> container =
+                    new PageListPageItem<TPageData>(
+                        itemIndex,
+                        page,
+                        dataItemIndex,
+                        numberOfPagesToRender,
+                        pageLink);
+
                 var itemTemplateHeader = GetItemTemplateHeader(dataItemIndex);
                 if (itemTemplateHeader != null)
                 {
-                    AddItemSurrounding(itemTemplateHeader, itemIndex);
-                    itemIndex++;
+                    itemTemplateHeader.InstantiateIn(container);
                 }
 
-                AddPageItem(itemIndex, pageItemContext);
-                itemIndex++;
+                var template = GetItemTemplate(container);
+                template.InstantiateIn(container);
+                Controls.Add(container);
+                container.DataBind();
 
                 var itemTemplateFooter = GetItemTemplateFooter(dataItemIndex);
                 if (itemTemplateFooter != null)
                 {
-                    AddItemSurrounding(itemTemplateFooter, itemIndex);
-                    itemIndex++;
+                    itemTemplateFooter.InstantiateIn(container);
                 }
+
+                OnPageItemDataBound(container);
+                itemIndex++;
 
                 if (IsNotLastItem(dataItemIndex, numberOfPagesToRender) && SeparatorTemplate != null)
                 {
@@ -93,25 +100,6 @@ namespace TypedTemplating
 
                 dataItemIndex++;
             }
-        }
-
-        void AddItemSurrounding(ITemplate itemTemplate, int itemIndex)
-        {
-            var container = new NonPageItem(itemIndex);
-            itemTemplate.InstantiateIn(container);
-            Controls.Add(container);
-            container.DataBind();
-            OnItemDataBound(container);
-        }
-
-        void AddPageItem(int itemIndex, PageItemRenderingContext<TPageData> pageItemContext)
-        {
-            PageListPageItem<TPageData> container = CreatePageItemContainer(itemIndex, pageItemContext);
-            var template = GetItemTemplate(pageItemContext);
-            template.InstantiateIn(container);
-            Controls.Add(container);
-            container.DataBind();
-            OnPageItemDataBound(container);
         }
         
         ITemplate GetItemTemplateHeader(int dataItemIndex)
@@ -144,26 +132,18 @@ namespace TypedTemplating
             return null;
         }
 
-        PageListPageItem<TPageData> CreatePageItemContainer(int itemIndex, PageItemRenderingContext<TPageData> renderingContext)
+        protected virtual ITemplate GetItemTemplate(PageListPageItem<TPageData> pageItem)
         {
-            return new PageListPageItem<TPageData>(
-                itemIndex,
-                renderingContext,
-                pageLink);
-        }
-
-        protected virtual ITemplate GetItemTemplate(PageItemRenderingContext<TPageData> renderingContext)
-        {
-            if (renderingContext.DataItemIndex == 0 && FirstItemTemplate != null)
+            if (pageItem.DataItemIndex == 0 && FirstItemTemplate != null)
                 return FirstItemTemplate;
 
-            if (renderingContext.IsLast && LastItemTemplate != null)
+            if (pageItem.IsLastPageItem && LastItemTemplate != null)
                 return LastItemTemplate;
 
             if (AlternatingItemTemplate == null)
                 return ItemTemplate;
 
-            return IsAlternatingItem(renderingContext.DataItemIndex) ? ItemTemplate : AlternatingItemTemplate;
+            return IsAlternatingItem(pageItem.DataItemIndex) ? ItemTemplate : AlternatingItemTemplate;
         }
 
         bool IsNotLastItem(int dataItemIndex, int pageCount)

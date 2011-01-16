@@ -13,7 +13,7 @@ namespace TypedTemplating
 
         public int ItemIndex { get; private set; }
         
-        PageData IPageSource.CurrentPage
+        public virtual PageData CurrentPage
         {
             get
             {

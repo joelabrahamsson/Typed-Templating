@@ -9,37 +9,42 @@ namespace TypedTemplating
         : PageListItem 
         where TPageData : PageData
     {
-        PageItemRenderingContext<TPageData> renderingContext;
-        
-        public PageListPageItem(int itemIndex, PageItemRenderingContext<TPageData> renderingContext, 
+        public PageListPageItem(int itemIndex,
+            TPageData page,
+            int dataItemIndex, 
+            int totalNumberOfPagesToRender,
             PageReference listingRootPageLink)
             : base(itemIndex)
         {
-            this.renderingContext = renderingContext;
+            DataItem = page;
+            DataItemIndex = dataItemIndex;
+            TotalNumberOfPagesToRender = totalNumberOfPagesToRender;
             this.listingRootPageLink = listingRootPageLink;
         }
 
         PageReference listingRootPageLink;
 
-        public TPageData DataItem
-        {
-            get { return renderingContext.Page; }
-        }
+        public virtual TPageData DataItem { get; private set; }
 
-        public virtual int DataItemIndex
-        {
-            get { return renderingContext.DataItemIndex; }
-        }
+        public virtual int DataItemIndex { get; private set; }
 
         public virtual bool IsFirstPageItem
         {
-            get { return renderingContext.IsFirst; }
+            get
+            {
+                return DataItemIndex == 0;
+            }
         }
 
         public virtual bool IsLastPageItem
         {
-            get { return renderingContext.IsLast; }
+            get
+            {
+                return DataItemIndex == TotalNumberOfPagesToRender - 1;
+            }
         }
+
+        protected virtual int TotalNumberOfPagesToRender { get; private set; }
 
         public virtual int PageLevelBelowRoot
         {
@@ -52,7 +57,7 @@ namespace TypedTemplating
                     return 0;
 
                 int levels = 1;
-                PageReference parentNode = renderingContext.Page.ParentLink;
+                PageReference parentNode = DataItem.ParentLink;
                 while (PageReference.IsValue(parentNode) && !IsListingRoot(parentNode))
                 {
                     levels++;
@@ -68,6 +73,12 @@ namespace TypedTemplating
             return pageLink.CompareToIgnoreWorkID(listingRootPageLink);
         }
 
-        
+        public override PageData CurrentPage
+        {
+            get
+            {
+                return DataItem;
+            }
+        }
     }
 }
