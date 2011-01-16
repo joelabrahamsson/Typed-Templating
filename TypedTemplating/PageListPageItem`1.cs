@@ -51,26 +51,37 @@ namespace TypedTemplating
         #endregion
 
         #region Branch positions
+        int? pageLevelBelowRoot;
         public virtual int PageLevelBelowRoot
         {
             get
             {
-                if(PageReference.IsNullOrEmpty(listingRoot))
-                    return 0;
+                if (pageLevelBelowRoot.HasValue)
+                    return pageLevelBelowRoot.Value;
 
-                if (IsListingRoot(DataItem.PageLink))
-                    return 0;
+                pageLevelBelowRoot = GetPageLevelBelowRoot();
 
-                int levels = 1;
-                PageReference parentNode = DataItem.ParentLink;
-                while (PageReference.IsValue(parentNode) && !IsListingRoot(parentNode))
-                {
-                    levels++;
-                    parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
-                }
-
-                return levels;
+                return pageLevelBelowRoot.Value;
             }
+        }
+
+        protected virtual int GetPageLevelBelowRoot()
+        {
+            if(PageReference.IsNullOrEmpty(listingRoot))
+                return 0;
+
+            if (IsListingRoot(DataItem.PageLink))
+                return 0;
+
+            int levels = 1;
+            PageReference parentNode = DataItem.ParentLink;
+            while (PageReference.IsValue(parentNode) && !IsListingRoot(parentNode))
+            {
+                levels++;
+                parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
+            }
+
+            return levels;
         }
 
         protected bool IsListingRoot(PageReference pageLink)
@@ -86,44 +97,66 @@ namespace TypedTemplating
             }
         }
 
+        bool? isAncestorOfCurrentlyViewedPage;
         public virtual bool IsAncestorOfCurrentlyViewedPage
         {
-            get
+            get 
             {
-                if (CurrentlyViewedPage.PageLink.CompareToIgnoreWorkID(DataItem.PageLink))
-                    return false;
+                if (isAncestorOfCurrentlyViewedPage.HasValue)
+                    return isAncestorOfCurrentlyViewedPage.Value;
 
-                PageReference parentNode = CurrentlyViewedPage.ParentLink;
-                while (PageReference.IsValue(parentNode))
-                {
-                    if (parentNode.CompareToIgnoreWorkID(DataItem.PageLink))
-                        return true;
+                isAncestorOfCurrentlyViewedPage = DetermineIfAncestorOfCurrentlyViewedPage();
 
-                    parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
-                }
-
-                return false;
+                return isAncestorOfCurrentlyViewedPage.Value;
             }
         }
 
+        protected virtual bool DetermineIfAncestorOfCurrentlyViewedPage()
+        {
+            if (CurrentlyViewedPage.PageLink.CompareToIgnoreWorkID(DataItem.PageLink))
+                return false;
+
+            PageReference parentNode = CurrentlyViewedPage.ParentLink;
+            while (PageReference.IsValue(parentNode))
+            {
+                if (parentNode.CompareToIgnoreWorkID(DataItem.PageLink))
+                    return true;
+
+                parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
+            }
+
+            return false;
+        }
+
+        bool? isDescendantOfCurrentlyViewedPage;
         public virtual bool IsDescendantOfCurrentlyViewedPage
         {
-            get
+            get 
             {
-                if (DataItem.PageLink.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink))
-                    return false;
+                if (isDescendantOfCurrentlyViewedPage.HasValue)
+                    return isDescendantOfCurrentlyViewedPage.Value;
 
-                PageReference parentNode = DataItem.ParentLink;
-                while (PageReference.IsValue(parentNode))
-                {
-                    if (parentNode.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink))
-                        return true;
+                isDescendantOfCurrentlyViewedPage = DetermineIfDescendantOfCurrentlyViewedPage();
 
-                    parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
-                }
-
-                return false;
+                return isDescendantOfCurrentlyViewedPage.Value;
             }
+        }
+
+        protected virtual bool DetermineIfDescendantOfCurrentlyViewedPage()
+        {
+            if (DataItem.PageLink.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink))
+                return false;
+
+            PageReference parentNode = DataItem.ParentLink;
+            while (PageReference.IsValue(parentNode))
+            {
+                if (parentNode.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink))
+                    return true;
+
+                parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
+            }
+
+            return false;
         }
 
         protected virtual PageData CurrentlyViewedPage
