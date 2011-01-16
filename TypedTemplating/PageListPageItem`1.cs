@@ -10,6 +10,8 @@ namespace TypedTemplating
         : PageListItem 
         where TPageData : PageData
     {
+        PageReference listingRoot;
+
         public PageListPageItem(
             int itemIndex,
             TPageData page,
@@ -24,10 +26,9 @@ namespace TypedTemplating
             this.listingRoot = listingRoot;
         }
 
-        PageReference listingRoot;
-
         public virtual TPageData DataItem { get; private set; }
 
+        #region DataItem positions
         public virtual int DataItemIndex { get; private set; }
 
         public virtual bool IsFirstPageItem
@@ -46,6 +47,10 @@ namespace TypedTemplating
             }
         }
 
+        protected virtual int TotalNumberOfPagesToRender { get; private set; }
+        #endregion
+
+        #region Branch positions
         public virtual int PageLevelBelowRoot
         {
             get
@@ -66,6 +71,11 @@ namespace TypedTemplating
 
                 return levels;
             }
+        }
+
+        protected bool IsListingRoot(PageReference pageLink)
+        {
+            return pageLink.CompareToIgnoreWorkID(listingRoot);
         }
 
         public virtual bool IsCurrentlyViewedPage
@@ -123,14 +133,9 @@ namespace TypedTemplating
                 return base.CurrentPage;
             }
         }
+        #endregion
 
-        protected virtual int TotalNumberOfPagesToRender { get; private set; }
-
-        protected bool IsListingRoot(PageReference pageLink)
-        {
-            return pageLink.CompareToIgnoreWorkID(listingRoot);
-        }
-
+        #region Surroundings
         Control itemHeader;
         public virtual Control ItemHeader
         {
@@ -166,6 +171,7 @@ namespace TypedTemplating
                 Controls.Add(itemFooter);
             }
         }
+        #endregion
 
         #region IPageSource
         public override PageData CurrentPage
