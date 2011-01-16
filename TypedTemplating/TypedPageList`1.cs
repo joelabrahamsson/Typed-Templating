@@ -13,11 +13,11 @@ namespace TypedTemplating
 {
     [ParseChildren(true)]
     [PersistChildren(true)]
-    public class PageList<TPageData> : Control, INamingContainer, IPageSource where TPageData : PageData
+    public class TypedPageList<TPageData> : Control, INamingContainer, IPageSource where TPageData : PageData
     {
         bool isDataBound;
 
-        public PageList()
+        public TypedPageList()
         {
             ListingStrategy = new Children<TPageData>();
             AccessFilteringStrategy = new FilterForVisitor<TPageData>();
