@@ -63,7 +63,23 @@ namespace TypedTemplating
             int dataItemIndex = 0;
             var pages = GetPagesToRender();
             int numberOfPagesToRender = pages.Count();
-            
+
+            if (numberOfPagesToRender == 0 && !ShowWhenEmpty)
+            {
+                Visible = false;
+                return;
+            }
+
+            if (HeaderTemplate != null)
+            {
+                var headerContainer = new NonPageItem(itemIndex);
+                HeaderTemplate.InstantiateIn(headerContainer);
+                Controls.Add(headerContainer);
+                headerContainer.DataBind();
+                OnItemDataBound(headerContainer);
+                itemIndex++;
+            }
+
             foreach (var page in pages)
             {
                 AddPageItem(itemIndex, page, dataItemIndex, numberOfPagesToRender);
@@ -76,6 +92,15 @@ namespace TypedTemplating
                 }
 
                 dataItemIndex++;
+            }
+
+            if (FooterTemplate != null)
+            {
+                var footerContainer = new NonPageItem(itemIndex);
+                FooterTemplate.InstantiateIn(footerContainer);
+                Controls.Add(footerContainer);
+                footerContainer.DataBind();
+                OnItemDataBound(footerContainer);
             }
         }
 
@@ -133,7 +158,7 @@ namespace TypedTemplating
             {
                 return AlternatingItemHeaderTemplate;
             }
-            
+
             if (ItemHeaderTemplate != null)
             {
                 return ItemHeaderTemplate;
@@ -146,7 +171,7 @@ namespace TypedTemplating
         {
             if (pageItem.IsFirstPageItem && FirstItemFooterTemplate != null)
             {
-                return FirstItemFooterTemplate;    
+                return FirstItemFooterTemplate;
             }
 
             if (pageItem.IsLastPageItem && LastItemFooterTemplate != null)
@@ -158,7 +183,7 @@ namespace TypedTemplating
             {
                 return AlternatingItemFooterTemplate;
             }
-            
+
             if (ItemFooterTemplate != null)
             {
                 return ItemFooterTemplate;
@@ -230,7 +255,7 @@ namespace TypedTemplating
             if (!PageReference.IsNullOrEmpty(listingRoot))
                 return ListingStrategy.GetPages(listingRoot);
 
-            if(dataSource != null)
+            if (dataSource != null)
                 return dataSource;
 
             return new List<TPageData>();
@@ -244,8 +269,8 @@ namespace TypedTemplating
 
         protected virtual IEnumerable<TPageData> GetPagesToRender()
         {
-            int skipCount = (PagingPage - 1)*PagingPageSize;
-            
+            int skipCount = (PagingPage - 1) * PagingPageSize;
+
             return GetPagesToList()
                 .Skip(skipCount)
                 .Take(PagingPageSize);
@@ -281,7 +306,7 @@ namespace TypedTemplating
         }
 
         int? pagingPageSize;
-        public int PagingPageSize 
+        public int PagingPageSize
         {
             get
             {
@@ -323,7 +348,7 @@ namespace TypedTemplating
         {
             get
             {
-                return PageReference.IsNullOrEmpty(listingRoot) 
+                return PageReference.IsNullOrEmpty(listingRoot)
                     ? PageReference.EmptyReference
                     : listingRoot;
             }
@@ -332,6 +357,8 @@ namespace TypedTemplating
                 listingRoot = value;
             }
         }
+
+        public virtual bool ShowWhenEmpty { get; set; }
         #endregion
 
         #region Templates
@@ -354,6 +381,16 @@ namespace TypedTemplating
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate LastItemTemplate { get; set; }
+
+        [TemplateContainer(typeof(NonPageItem))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate HeaderTemplate { get; set; }
+
+        [TemplateContainer(typeof(NonPageItem))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate FooterTemplate { get; set; }
 
         [TemplateContainer(typeof(NonPageItem))]
         [Browsable(false)]
