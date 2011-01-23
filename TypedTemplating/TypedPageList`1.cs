@@ -104,12 +104,13 @@ namespace TypedTemplating
             }
         }
 
-        void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
+        protected virtual void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
         {
             PageListPageItem<TPageData> itemContainer = 
                 CreateItemContainer(itemIndex, page, dataItemIndex, numberOfPagesToRender);
-
-            var itemTemplateHeader = GetItemTemplateHeader(itemContainer);
+            Controls.Add(itemContainer);
+            
+            var itemTemplateHeader = GetItemHeaderTemplate(itemContainer);
             if (itemTemplateHeader != null)
             {
                 var headerContainer = new Control();
@@ -123,15 +124,13 @@ namespace TypedTemplating
                 template.InstantiateIn(itemContainer);
             }
 
-            var itemTemplateFooter = GetItemTemplateFooter(itemContainer);
+            var itemTemplateFooter = GetItemFooterTemplate(itemContainer);
             if (itemTemplateFooter != null)
             {
                 var footerContainer = new Control();
                 itemTemplateFooter.InstantiateIn(footerContainer);
                 itemContainer.ItemFooter = footerContainer;
             }
-
-            Controls.Add(itemContainer);
 
             itemContainer.DataBind();
             OnPageItemDataBound(itemContainer);
@@ -148,7 +147,7 @@ namespace TypedTemplating
                 listingRoot);
         }
 
-        protected virtual ITemplate GetItemTemplateHeader(PageListPageItem<TPageData> pageItem)
+        protected virtual ITemplate GetItemHeaderTemplate(PageListPageItem<TPageData> pageItem)
         {
             if (pageItem.IsFirstPageItem && FirstItemHeaderTemplate != null)
             {
@@ -173,7 +172,7 @@ namespace TypedTemplating
             return null;
         }
 
-        protected virtual ITemplate GetItemTemplateFooter(PageListPageItem<TPageData> pageItem)
+        protected virtual ITemplate GetItemFooterTemplate(PageListPageItem<TPageData> pageItem)
         {
             if (pageItem.IsFirstPageItem && FirstItemFooterTemplate != null)
             {
