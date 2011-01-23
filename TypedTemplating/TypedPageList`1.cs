@@ -106,13 +106,7 @@ namespace TypedTemplating
 
         void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
         {
-            PageListPageItem<TPageData> itemContainer =
-                new PageListPageItem<TPageData>(
-                    itemIndex,
-                    page,
-                    dataItemIndex,
-                    numberOfPagesToRender,
-                    listingRoot);
+            PageListPageItem<TPageData> itemContainer = CreateItemContainer(itemIndex, page, dataItemIndex, numberOfPagesToRender);
 
             var itemTemplateHeader = GetItemTemplateHeader(itemContainer);
             if (itemTemplateHeader != null)
@@ -140,6 +134,17 @@ namespace TypedTemplating
 
             itemContainer.DataBind();
             OnPageItemDataBound(itemContainer);
+        }
+
+        protected virtual PageListPageItem<TPageData> CreateItemContainer(
+            int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
+        {
+            return new PageListPageItem<TPageData>(
+                itemIndex,
+                page,
+                dataItemIndex,
+                numberOfPagesToRender,
+                listingRoot);
         }
 
         ITemplate GetItemTemplateHeader(PageListPageItem<TPageData> pageItem)
