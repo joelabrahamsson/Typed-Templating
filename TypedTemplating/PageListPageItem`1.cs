@@ -84,7 +84,7 @@ namespace TypedTemplating
             return levels;
         }
 
-        protected bool IsListingRoot(PageReference pageLink)
+        protected virtual bool IsListingRoot(PageReference pageLink)
         {
             return pageLink.CompareToIgnoreWorkID(listingRoot);
         }
