@@ -97,7 +97,7 @@ namespace TypedTemplating
             }
         }
 
-        protected virtual PageReference DataItemTargetPageLink
+        public virtual PageReference DataItemTargetPageLink
         {
             get { return DataItem.PageLink; }
         }
