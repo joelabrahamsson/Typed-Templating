@@ -70,7 +70,7 @@ namespace TypedTemplating
             if(PageReference.IsNullOrEmpty(listingRoot))
                 return 0;
 
-            if (IsListingRoot(DataItem.PageLink))
+            if (IsListingRoot(DataItemTargetPageLink))
                 return 0;
 
             int levels = 1;
@@ -93,8 +93,13 @@ namespace TypedTemplating
         {
             get
             {
-                return DataItem.PageLink.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink);
+                return DataItemTargetPageLink.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink);
             }
+        }
+
+        protected virtual PageReference DataItemTargetPageLink
+        {
+            get { return DataItem.PageLink; }
         }
 
         bool? isAncestorOfCurrentlyViewedPage;
@@ -113,13 +118,13 @@ namespace TypedTemplating
 
         protected virtual bool DetermineIfAncestorOfCurrentlyViewedPage()
         {
-            if (CurrentlyViewedPage.PageLink.CompareToIgnoreWorkID(DataItem.PageLink))
+            if (CurrentlyViewedPage.PageLink.CompareToIgnoreWorkID(DataItemTargetPageLink))
                 return false;
 
             PageReference parentNode = CurrentlyViewedPage.ParentLink;
             while (PageReference.IsValue(parentNode))
             {
-                if (parentNode.CompareToIgnoreWorkID(DataItem.PageLink))
+                if (parentNode.CompareToIgnoreWorkID(DataItemTargetPageLink))
                     return true;
 
                 parentNode = DataFactory.Instance.GetPage(parentNode).ParentLink;
@@ -144,7 +149,7 @@ namespace TypedTemplating
 
         protected virtual bool DetermineIfDescendantOfCurrentlyViewedPage()
         {
-            if (DataItem.PageLink.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink))
+            if (DataItemTargetPageLink.CompareToIgnoreWorkID(CurrentlyViewedPage.PageLink))
                 return false;
 
             PageReference parentNode = DataItem.ParentLink;
