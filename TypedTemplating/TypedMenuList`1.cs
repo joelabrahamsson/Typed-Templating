@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Web.UI;
 using EPiServer.Core;
+using TypedTemplating.Filtering;
 using TypedTemplating.ItemClassification;
 
 namespace TypedTemplating
@@ -11,6 +12,7 @@ namespace TypedTemplating
         public TypedMenuList()
         {
             SelectedItemStrategy = new BranchRootExcludingListingRoot<TPageData>();
+            FilteringStrategy = new VisibleInMenus<TPageData>();
         }
 
         #region Control hiearchy build up
