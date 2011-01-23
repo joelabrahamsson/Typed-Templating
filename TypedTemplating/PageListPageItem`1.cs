@@ -70,7 +70,7 @@ namespace TypedTemplating
             if(PageReference.IsNullOrEmpty(ListingRoot))
                 return 0;
 
-            if (IsListingRoot(DataItemTargetPageLink))
+            if (IsListingRoot(DataItem.PageLink))
                 return 0;
 
             int levels = 1;
