@@ -168,7 +168,7 @@ namespace TypedTemplating
         {
             get
             {
-                return base.CurrentPage;
+                return PageBase.CurrentPage;
             }
         }
         #endregion
