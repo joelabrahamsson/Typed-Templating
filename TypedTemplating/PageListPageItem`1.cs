@@ -10,7 +10,7 @@ namespace TypedTemplating
         : PageListItem 
         where TPageData : PageData
     {
-        PageReference listingRoot;
+        protected PageReference ListingRoot;
 
         public PageListPageItem(
             int itemIndex,
@@ -23,7 +23,7 @@ namespace TypedTemplating
             DataItem = page;
             DataItemIndex = dataItemIndex;
             TotalNumberOfPagesToRender = totalNumberOfPagesToRender;
-            this.listingRoot = listingRoot;
+            ListingRoot = listingRoot;
         }
 
         public virtual TPageData DataItem { get; private set; }
@@ -67,7 +67,7 @@ namespace TypedTemplating
 
         protected virtual int GetPageLevelBelowRoot()
         {
-            if(PageReference.IsNullOrEmpty(listingRoot))
+            if(PageReference.IsNullOrEmpty(ListingRoot))
                 return 0;
 
             if (IsListingRoot(DataItemTargetPageLink))
@@ -86,7 +86,7 @@ namespace TypedTemplating
 
         protected virtual bool IsListingRoot(PageReference pageLink)
         {
-            return pageLink.CompareToIgnoreWorkID(listingRoot);
+            return pageLink.CompareToIgnoreWorkID(ListingRoot);
         }
 
         public virtual bool IsCurrentlyViewedPage
