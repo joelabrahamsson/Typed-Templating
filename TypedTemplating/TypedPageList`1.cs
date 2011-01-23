@@ -106,7 +106,8 @@ namespace TypedTemplating
 
         void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
         {
-            PageListPageItem<TPageData> itemContainer = CreateItemContainer(itemIndex, page, dataItemIndex, numberOfPagesToRender);
+            PageListPageItem<TPageData> itemContainer = 
+                CreateItemContainer(itemIndex, page, dataItemIndex, numberOfPagesToRender);
 
             var itemTemplateHeader = GetItemTemplateHeader(itemContainer);
             if (itemTemplateHeader != null)
@@ -147,7 +148,7 @@ namespace TypedTemplating
                 listingRoot);
         }
 
-        ITemplate GetItemTemplateHeader(PageListPageItem<TPageData> pageItem)
+        protected virtual ITemplate GetItemTemplateHeader(PageListPageItem<TPageData> pageItem)
         {
             if (pageItem.IsFirstPageItem && FirstItemHeaderTemplate != null)
             {
@@ -172,7 +173,7 @@ namespace TypedTemplating
             return null;
         }
 
-        ITemplate GetItemTemplateFooter(PageListPageItem<TPageData> pageItem)
+        protected virtual ITemplate GetItemTemplateFooter(PageListPageItem<TPageData> pageItem)
         {
             if (pageItem.IsFirstPageItem && FirstItemFooterTemplate != null)
             {
@@ -211,12 +212,12 @@ namespace TypedTemplating
             return IsAlternatingItem(pageItem.DataItemIndex) ? ItemTemplate : AlternatingItemTemplate;
         }
 
-        bool IsNotLastItem(int dataItemIndex, int pageCount)
+        protected virtual bool IsNotLastItem(int dataItemIndex, int pageCount)
         {
             return dataItemIndex + 1 < pageCount;
         }
 
-        void AddSeparator(int itemIndex)
+        protected virtual void AddSeparator(int itemIndex)
         {
             var separatorContainer = new NonPageItem(itemIndex);
             SeparatorTemplate.InstantiateIn(separatorContainer);
@@ -225,7 +226,7 @@ namespace TypedTemplating
             OnItemDataBound(separatorContainer);
         }
 
-        bool IsAlternatingItem(int dataItemIndex)
+        protected bool IsAlternatingItem(int dataItemIndex)
         {
             return dataItemIndex % 2 != 0;
         }
