@@ -64,9 +64,17 @@ namespace TypedTemplating
             var pages = GetPagesToRender();
             int numberOfPagesToRender = pages.Count();
 
-            if (numberOfPagesToRender == 0 && !ShowWhenEmpty)
+            if (numberOfPagesToRender == 0)
             {
-                Visible = false;
+                if (EmptyTemplate != null)
+                {
+                    AddEmptyTemplate();
+                }
+                else
+                {
+                    Visible = false;
+                }
+
                 return;
             }
 
@@ -102,6 +110,13 @@ namespace TypedTemplating
                 footerContainer.DataBind();
                 OnItemDataBound(footerContainer);
             }
+        }
+
+        protected void AddEmptyTemplate()
+        {
+            var emptyTemplateContainer = new Control();
+            EmptyTemplate.InstantiateIn(emptyTemplateContainer);
+            Controls.Add(emptyTemplateContainer);
         }
 
         protected virtual void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
@@ -362,8 +377,6 @@ namespace TypedTemplating
                 listingRoot = value;
             }
         }
-
-        public virtual bool ShowWhenEmpty { get; set; }
         #endregion
 
         #region Templates
@@ -441,6 +454,11 @@ namespace TypedTemplating
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate LastItemFooterTemplate { get; set; }
+
+        [TemplateContainer(typeof(Control))]
+        [Browsable(false)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        public virtual ITemplate EmptyTemplate { get; set; }
         #endregion
 
         #region IPageSource
