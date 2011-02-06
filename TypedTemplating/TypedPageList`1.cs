@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using EPiServer.Core;
 using TypedTemplating.AccessFiltering;
 using TypedTemplating.Filtering;
@@ -114,9 +115,10 @@ namespace TypedTemplating
 
         protected void AddEmptyTemplate()
         {
-            var emptyTemplateContainer = new Control();
-            EmptyTemplate.InstantiateIn(emptyTemplateContainer);
+            var emptyTemplateContainer = new EmptyTemplateContainer();
+            EmptyTemplate.InstantiateIn(this);
             Controls.Add(emptyTemplateContainer);
+            emptyTemplateContainer.DataBind();
         }
 
         protected virtual void AddPageItem(int itemIndex, TPageData page, int dataItemIndex, int numberOfPagesToRender)
@@ -455,7 +457,7 @@ namespace TypedTemplating
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate LastItemFooterTemplate { get; set; }
 
-        [TemplateContainer(typeof(Control))]
+        [TemplateContainer(typeof(EmptyTemplateContainer))]
         [Browsable(false)]
         [PersistenceMode(PersistenceMode.InnerProperty)]
         public virtual ITemplate EmptyTemplate { get; set; }

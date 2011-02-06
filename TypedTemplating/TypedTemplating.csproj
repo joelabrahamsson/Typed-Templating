@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="AccessFiltering\FilterForVisitor`1.cs" />
     <Compile Include="AccessFiltering\IAccessFilteringStrategy`1.cs" />
+    <Compile Include="EmptyTemplateContainer.cs" />
     <Compile Include="Filtering\BranchBelowRootVisibleInMenus`1.cs" />
     <Compile Include="Filtering\IFilteringStrategy`1.cs" />
     <Compile Include="Filtering\NoFiltering`1.cs" />
