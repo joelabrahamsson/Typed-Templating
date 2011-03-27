@@ -60,11 +60,13 @@ namespace TypedTemplating
 
         void CreateControlHiearchy()
         {
+            Visible = true;
+
             int itemIndex = 0;
             int dataItemIndex = 0;
             var pages = GetPagesToRender();
             int numberOfPagesToRender = pages.Count();
-
+            
             if (numberOfPagesToRender == 0)
             {
                 if (EmptyTemplate != null)
@@ -116,7 +118,7 @@ namespace TypedTemplating
         protected void AddEmptyTemplate()
         {
             var emptyTemplateContainer = new EmptyTemplateContainer();
-            EmptyTemplate.InstantiateIn(this);
+            EmptyTemplate.InstantiateIn(emptyTemplateContainer);
             Controls.Add(emptyTemplateContainer);
             emptyTemplateContainer.DataBind();
         }
@@ -261,10 +263,11 @@ namespace TypedTemplating
 
         public override void DataBind()
         {
+            Controls.Clear();
+            ClearChildViewState();
+            ChildControlsCreated = true;
             base.DataBind();
-
             EnsureChildControls();
-
             CreateControlHiearchy();
 
             isDataBound = true;
