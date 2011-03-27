@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using EPiServer.Core;
 using TypedTemplating.AccessFiltering;
 using TypedTemplating.Filtering;
@@ -55,7 +54,7 @@ namespace TypedTemplating
         #region Control hiearchy build up
         protected override void CreateChildControls()
         {
-            Controls.Clear();
+            CreateControlHiearchy();
         }
 
         void CreateControlHiearchy()
@@ -150,9 +149,6 @@ namespace TypedTemplating
                 itemTemplateFooter.InstantiateIn(footerContainer);
                 itemContainer.ItemFooter = footerContainer;
             }
-
-            itemContainer.DataBind();
-            OnPageItemDataBound(itemContainer);
         }
 
         protected virtual PageListPageItem<TPageData> CreateItemContainer(
@@ -267,8 +263,23 @@ namespace TypedTemplating
             ClearChildViewState();
             ChildControlsCreated = true;
             base.DataBind();
-            EnsureChildControls();
-            CreateControlHiearchy();
+            CreateChildControls();
+
+            for (int i = 0; i < Controls.Count; i++)
+            {
+                Controls[i].DataBind();
+                if (Controls[i] is PageListItem)
+                {
+                    if (Controls[i] is PageListPageItem<TPageData>)
+                    {
+                        OnPageItemDataBound((PageListPageItem<TPageData>) Controls[i]);
+                    }
+                    else
+                    {
+                        OnItemDataBound((PageListItem)Controls[i]);
+                    }
+                }
+            }
 
             isDataBound = true;
         }
